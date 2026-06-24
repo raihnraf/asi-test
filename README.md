@@ -176,9 +176,9 @@ npm run dev
 - logout
 - seeded admin and staff demo accounts
 
-## Advanced Features Implemented (Candidate Edge)
+## Additional Features
 
-To demonstrate production-grade software development practices, this application goes beyond standard CRUD with:
+The application also includes a few safeguards and convenience features beyond the basic CRUD requirement:
 
 1. **Financial & Data Integrity (Price Snapshotting):** Product prices are snapshotted into the transactions table upon order creation, preventing historical financial data corruption when product master prices change.
 2. **Automated Inventory Control:** Sales orders automatically deduct or restore product stock. Strict validation prevents ordering beyond available stock.
