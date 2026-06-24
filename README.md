@@ -116,16 +116,22 @@ If login fails with `These credentials do not match our records.`, seed the acti
 ./bin/demo-users
 ```
 
-If you want to restore the full local demo dataset again:
+If you want an exact clean demo reset with 15 products and 15 sales orders:
+
+```bash
+./bin/demo
+```
+
+If you want to restore the local demo dataset again without resetting the database first:
 
 ```bash
 ./bin/demo-data
 ```
 
-If you want an exact clean demo reset back to the seeded baseline:
+Equivalent explicit Sail command for a clean baseline reset:
 
 ```bash
-./bin/demo-data --fresh
+./vendor/bin/sail artisan migrate:fresh --seed
 ```
 
 Equivalent explicit Sail command:
@@ -134,10 +140,10 @@ Equivalent explicit Sail command:
 ./vendor/bin/sail artisan db:seed --class=DemoUserSeeder
 ```
 
-If you need a clean reset:
+If you prefer the existing data restore shortcut with the same clean reset behavior:
 
 ```bash
-./vendor/bin/sail artisan migrate:fresh --seed
+./bin/demo-data --fresh
 ```
 
 ## Roles
@@ -160,6 +166,7 @@ If you need a clean reset:
 ```bash
 ./vendor/bin/sail up -d
 ./vendor/bin/sail down
+./bin/demo
 ./bin/demo-users
 ./bin/demo-data
 ./vendor/bin/sail artisan migrate --seed

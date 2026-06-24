@@ -26,11 +26,6 @@ class ProductCatalogSeeder extends Seeder
         ['name' => 'Router Dual Band AX1800', 'sku' => 'RTR-10013', 'price' => '899000.00', 'stock' => 19],
         ['name' => 'Projector Full HD', 'sku' => 'PRJ-10014', 'price' => '4599000.00', 'stock' => 8],
         ['name' => 'Conference Speakerphone', 'sku' => 'SPK-10015', 'price' => '1650000.00', 'stock' => 15],
-        ['name' => 'Barcode Scanner USB', 'sku' => 'BCR-10016', 'price' => '675000.00', 'stock' => 24],
-        ['name' => 'Receipt Printer Thermal', 'sku' => 'RCP-10017', 'price' => '1299000.00', 'stock' => 18],
-        ['name' => 'External Hard Drive 2TB', 'sku' => 'HDD-10018', 'price' => '1049000.00', 'stock' => 21],
-        ['name' => 'Wireless Presenter Clicker', 'sku' => 'PRS-10019', 'price' => '245000.00', 'stock' => 34],
-        ['name' => 'Mini PC Core i5', 'sku' => 'MPC-10020', 'price' => '5899000.00', 'stock' => 9],
     ];
 
     public function run(): void

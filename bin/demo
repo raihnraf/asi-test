@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ -x ./vendor/bin/sail ]; then
+    ./vendor/bin/sail artisan migrate:fresh --seed "$@"
+else
+    php artisan migrate:fresh --seed "$@"
+fi

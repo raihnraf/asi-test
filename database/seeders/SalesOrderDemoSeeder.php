@@ -28,11 +28,6 @@ class SalesOrderDemoSeeder extends Seeder
         ['sku' => 'RTR-10013', 'quantity' => 2, 'order_date' => '2026-06-12'],
         ['sku' => 'PRJ-10014', 'quantity' => 1, 'order_date' => '2026-06-13'],
         ['sku' => 'SPK-10015', 'quantity' => 2, 'order_date' => '2026-06-14'],
-        ['sku' => 'BCR-10016', 'quantity' => 3, 'order_date' => '2026-06-15'],
-        ['sku' => 'RCP-10017', 'quantity' => 2, 'order_date' => '2026-06-16'],
-        ['sku' => 'HDD-10018', 'quantity' => 3, 'order_date' => '2026-06-17'],
-        ['sku' => 'PRS-10019', 'quantity' => 4, 'order_date' => '2026-06-18'],
-        ['sku' => 'MPC-10020', 'quantity' => 1, 'order_date' => '2026-06-19'],
     ];
 
     public function run(): void
