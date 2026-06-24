@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ -x ./vendor/bin/sail ]; then
+    ARTISAN=(./vendor/bin/sail artisan)
+else
+    ARTISAN=(php artisan)
+fi
+
+if [ "${1:-}" = "--fresh" ]; then
+    shift
+    "${ARTISAN[@]}" migrate:fresh --seed "$@"
+    exit 0
+fi
+
+"${ARTISAN[@]}" db:seed --class=DemoUserSeeder "$@"
+"${ARTISAN[@]}" db:seed --class=ProductCatalogSeeder "$@"
+"${ARTISAN[@]}" db:seed --class=SalesOrderDemoSeeder "$@"

@@ -116,6 +116,18 @@ If login fails with `These credentials do not match our records.`, seed the acti
 ./bin/demo-users
 ```
 
+If you want to restore the full local demo dataset again:
+
+```bash
+./bin/demo-data
+```
+
+If you want an exact clean demo reset back to the seeded baseline:
+
+```bash
+./bin/demo-data --fresh
+```
+
 Equivalent explicit Sail command:
 
 ```bash
@@ -149,6 +161,7 @@ If you need a clean reset:
 ./vendor/bin/sail up -d
 ./vendor/bin/sail down
 ./bin/demo-users
+./bin/demo-data
 ./vendor/bin/sail artisan migrate --seed
 ./vendor/bin/sail artisan test
 npm run dev
