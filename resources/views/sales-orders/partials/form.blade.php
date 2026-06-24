@@ -4,7 +4,7 @@
         <option value="">{{ __('Select a product') }}</option>
         @foreach ($products as $product)
             <option value="{{ $product->id }}" @selected((string) old('product_id', $salesOrder->product_id ?? '') === (string) $product->id)>
-                {{ $product->name }} ({{ $product->sku }}) - {{ number_format((float) $product->price, 2, '.', '') }}
+                {{ $product->name }} ({{ $product->sku }}) - {{ \App\Support\Price::format($product->price) }}
             </option>
         @endforeach
     </select>

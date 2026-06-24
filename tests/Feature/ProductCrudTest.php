@@ -31,7 +31,7 @@ class ProductCrudTest extends TestCase
             Product::factory()->create([
                 'name' => sprintf('Product %02d', $number),
                 'sku' => sprintf('SKU-%03d', $number),
-                'price' => $number === 1 ? 123.4 : 10 + $number,
+                'price' => $number === 1 ? 25000 : 10 + $number,
                 'stock' => $number,
             ]);
         }
@@ -44,7 +44,7 @@ class ProductCrudTest extends TestCase
         $response->assertSee('Products');
         $response->assertSee('Product 01');
         $response->assertSee('SKU-001');
-        $response->assertSee('123.40');
+        $response->assertSee('25.000');
         $response->assertSee('10');
         $response->assertSee('Product 10');
         $response->assertDontSee('Product 11');
@@ -77,14 +77,14 @@ class ProductCrudTest extends TestCase
 
     public function test_user_can_create_product(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $response = $this
             ->actingAs($user)
             ->post('/products', [
                 'name' => 'Gaming Keyboard',
                 'sku' => 'KEY-10001',
-                'price' => '199.99',
+                'price' => '199.999,50',
                 'stock' => 8,
             ]);
 
@@ -94,14 +94,14 @@ class ProductCrudTest extends TestCase
         $this->assertDatabaseHas('products', [
             'name' => 'Gaming Keyboard',
             'sku' => 'KEY-10001',
-            'price' => '199.99',
+            'price' => '199999.50',
             'stock' => 8,
         ]);
     }
 
     public function test_product_validation_errors_are_reported(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         Product::factory()->create(['sku' => 'SKU-EXISTS']);
 
         $response = $this
@@ -120,7 +120,7 @@ class ProductCrudTest extends TestCase
 
     public function test_user_can_edit_product(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $product = Product::factory()->create([
             'name' => 'Old Product',
             'sku' => 'OLD-001',
@@ -133,7 +133,7 @@ class ProductCrudTest extends TestCase
             ->patch("/products/{$product->id}", [
                 'name' => 'Updated Product',
                 'sku' => 'NEW-001',
-                'price' => '99.50',
+                'price' => '99.500,25',
                 'stock' => 12,
             ]);
 
@@ -144,14 +144,14 @@ class ProductCrudTest extends TestCase
             'id' => $product->id,
             'name' => 'Updated Product',
             'sku' => 'NEW-001',
-            'price' => '99.50',
+            'price' => '99500.25',
             'stock' => 12,
         ]);
     }
 
     public function test_product_sku_can_remain_unchanged_when_updating(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $product = Product::factory()->create([
             'sku' => 'KEEP-001',
         ]);
@@ -171,7 +171,7 @@ class ProductCrudTest extends TestCase
 
     public function test_user_can_delete_product(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $product = Product::factory()->create();
 
         $response = $this

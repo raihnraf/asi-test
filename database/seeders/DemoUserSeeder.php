@@ -13,34 +13,20 @@ class DemoUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Admin User',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'email_verified_at' => now(),
-            ]
-        );
+        $this->upsertUser('admin@example.com', 'Admin User', 'admin');
+        $this->upsertUser('staff@example.com', 'Staff User', 'staff');
+        $this->upsertUser('test@example.com', 'Test User', 'admin');
+    }
 
-        User::updateOrCreate(
-            ['email' => 'staff@example.com'],
-            [
-                'name' => 'Staff User',
-                'password' => Hash::make('password'),
-                'role' => 'staff',
-                'email_verified_at' => now(),
-            ]
-        );
+    private function upsertUser(string $email, string $name, string $role): void
+    {
+        $user = User::query()->firstOrNew(['email' => $email]);
 
-        User::updateOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'email_verified_at' => now(),
-            ]
-        );
+        $user->forceFill([
+            'name' => $name,
+            'password' => Hash::make('password'),
+            'role' => $role,
+            'email_verified_at' => now(),
+        ])->save();
     }
 }

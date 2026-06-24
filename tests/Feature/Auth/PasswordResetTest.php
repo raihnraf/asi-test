@@ -70,4 +70,25 @@ class PasswordResetTest extends TestCase
             return true;
         });
     }
+
+    public function test_forgot_password_requests_are_rate_limited(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $client = $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.10']);
+        $rateLimited = false;
+
+        foreach (range(1, 10) as $attempt) {
+            $response = $client->post('/forgot-password', ['email' => $user->email]);
+
+            if ($response->getStatusCode() === 429) {
+                $rateLimited = true;
+
+                break;
+            }
+        }
+
+        $this->assertTrue($rateLimited, 'Forgot-password route should be rate limited.');
+    }
 }

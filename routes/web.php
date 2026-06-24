@@ -7,21 +7,25 @@ use App\Http\Controllers\SalesOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
 });
 
 Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('sales-orders/export', [SalesOrderController::class, 'export'])
         ->name('sales-orders.export');
     Route::resource('products', ProductController::class)->except('show');
     Route::resource('sales-orders', SalesOrderController::class)
         ->parameters(['sales-orders' => 'salesOrder'])
         ->except('show');
+});
 
+Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

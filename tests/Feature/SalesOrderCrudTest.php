@@ -30,14 +30,14 @@ class SalesOrderCrudTest extends TestCase
         $product = Product::factory()->create([
             'name' => 'Monitor 4K',
             'sku' => 'MON-4000',
-            'price' => 350.5,
+            'price' => 25000,
         ]);
 
         SalesOrder::factory()->create([
             'product_id' => $product->id,
             'quantity' => 2,
-            'unit_price' => 350.5,
-            'total_price' => 701.0,
+            'unit_price' => 25000,
+            'total_price' => 50000,
             'order_date' => '2026-06-24',
         ]);
 
@@ -50,8 +50,8 @@ class SalesOrderCrudTest extends TestCase
         $response->assertSee('2026-06-24');
         $response->assertSee('Monitor 4K');
         $response->assertSee('MON-4000');
-        $response->assertSee('350.50');
-        $response->assertSee('701.00');
+        $response->assertSee('25.000');
+        $response->assertSee('50.000');
     }
 
     public function test_user_can_search_sales_order_list(): void
@@ -153,7 +153,7 @@ class SalesOrderCrudTest extends TestCase
 
     public function test_user_can_create_sales_order_with_auto_calculated_total(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->staff()->create();
         $product = Product::factory()->create([
             'price' => 125.75,
             'stock' => 10,
@@ -183,7 +183,7 @@ class SalesOrderCrudTest extends TestCase
 
     public function test_sales_order_validation_errors_are_reported(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->staff()->create();
 
         $response = $this
             ->actingAs($user)
@@ -200,7 +200,7 @@ class SalesOrderCrudTest extends TestCase
 
     public function test_sales_order_quantity_cannot_exceed_available_stock(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->staff()->create();
         $product = Product::factory()->create(['stock' => 2]);
 
         $response = $this
@@ -220,7 +220,7 @@ class SalesOrderCrudTest extends TestCase
 
     public function test_user_can_edit_sales_order_and_recalculate_total(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $oldProduct = Product::factory()->create(['price' => 80, 'stock' => 10]);
         $newProduct = Product::factory()->create(['price' => 150, 'stock' => 6]);
         $salesOrder = SalesOrder::factory()->create([
@@ -258,7 +258,7 @@ class SalesOrderCrudTest extends TestCase
 
     public function test_updating_sales_order_for_same_product_keeps_original_unit_price_snapshot(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $product = Product::factory()->create([
             'price' => 125.75,
             'stock' => 10,
@@ -299,7 +299,7 @@ class SalesOrderCrudTest extends TestCase
 
     public function test_user_can_delete_sales_order(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $product = Product::factory()->create(['stock' => 10]);
         $salesOrder = SalesOrder::factory()->create([
             'product_id' => $product->id,

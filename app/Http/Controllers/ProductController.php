@@ -7,24 +7,22 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    private const PAGINATION_PER_PAGE = 10;
+
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Product::class);
+
         $search = trim((string) $request->query('search', ''));
 
         $products = Product::query()
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('name', 'like', "%{$search}%")
-                        ->orWhere('sku', 'like', "%{$search}%");
-                });
-            })
-            ->orderBy('name')
-            ->paginate(10)
+            ->search($search)
+            ->alphabetical()
+            ->paginate(self::PAGINATION_PER_PAGE)
             ->withQueryString();
 
         return view('products.index', compact('products'));
@@ -32,13 +30,15 @@ class ProductController extends Controller
 
     public function create(): View
     {
-        Gate::authorize('manage-products');
+        $this->authorize('create', Product::class);
 
         return view('products.create');
     }
 
     public function store(StoreProductRequest $request): RedirectResponse
     {
+        $this->authorize('create', Product::class);
+
         Product::create($request->validated());
 
         return redirect()
@@ -48,13 +48,15 @@ class ProductController extends Controller
 
     public function edit(Product $product): View
     {
-        Gate::authorize('manage-products');
+        $this->authorize('update', $product);
 
         return view('products.edit', compact('product'));
     }
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
+        $this->authorize('update', $product);
+
         $product->update($request->validated());
 
         return redirect()
@@ -64,7 +66,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
-        Gate::authorize('manage-products');
+        $this->authorize('delete', $product);
 
         $product->delete();
 

@@ -32,7 +32,7 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Total Revenue');
-        $response->assertSee('600.00');
+        $response->assertSee('600');
         $response->assertSee('Total Products');
         $response->assertSee('1');
         $response->assertSee('Total Transactions');

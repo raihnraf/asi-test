@@ -24,3 +24,19 @@ yarn-error.log
 
 /.planning/
 test.md
+AUDIT.md
+audit_*.md
+audit.md
+final.md
+PLAN.md
+RESEARCH.md
+REVIEW.md
+VERIFICATION.md
+AI-SPEC.md
+UI-SPEC.md
+UI-REVIEW.md
+EVAL-REVIEW.md
+SECURITY.md
+INGEST-CONFLICTS.md
+SUMMARY.md
+PATTERNS.md
