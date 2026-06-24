@@ -9,7 +9,7 @@ Laravel 11 web application for a screening test with:
 - role-based access control for admin and staff users
 - dashboard analytics and CSV export for sales orders
 
-## Engineering Notes
+## Development Notes
 
 - Architecture and refactor audit details: [`AUDIT.md`](./AUDIT.md)
 - The current implementation applies thin controllers, Form Requests for validation, a dedicated service layer for sales order business logic, and local Eloquent scopes for reusable query logic.
