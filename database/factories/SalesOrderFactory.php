@@ -20,7 +20,9 @@ class SalesOrderFactory extends Factory
         $unitPrice = fake()->randomFloat(2, 10, 500);
 
         return [
-            'product_id' => Product::factory(),
+            'product_id' => fn () => Product::factory()->create()->id,
+            'product_name_snapshot' => fn (array $attributes) => Product::query()->findOrFail($attributes['product_id'])->name,
+            'product_sku_snapshot' => fn (array $attributes) => Product::query()->findOrFail($attributes['product_id'])->sku,
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'total_price' => $unitPrice * $quantity,

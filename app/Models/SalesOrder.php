@@ -14,6 +14,8 @@ class SalesOrder extends Model
     /** @var list<string> */
     protected $fillable = [
         'product_id',
+        'product_name_snapshot',
+        'product_sku_snapshot',
         'quantity',
         'unit_price',
         'total_price',
@@ -44,10 +46,8 @@ class SalesOrder extends Model
 
         return $query->where(function (Builder $query) use ($search): void {
             $query->where('order_date', 'like', "%{$search}%")
-                ->orWhereHas('product', function (Builder $query) use ($search): void {
-                    $query->where('name', 'like', "%{$search}%")
-                        ->orWhere('sku', 'like', "%{$search}%");
-                });
+                ->orWhere('product_name_snapshot', 'like', "%{$search}%")
+                ->orWhere('product_sku_snapshot', 'like', "%{$search}%");
         });
     }
 

@@ -16,11 +16,34 @@ Laravel 11 web application for a screening test with:
 
 ## Prerequisites
 
+- Docker Desktop / Docker Engine with Docker Compose
 - PHP 8.2+
 - Composer
 - Node.js and npm
-- Docker Desktop with Docker Compose
 - Git
+
+## Recommended Workflow
+
+- Use Laravel Sail as the standard runtime for this project.
+- In practice, that means Docker provides the containers, while `./vendor/bin/sail` is the consistent command entry point for Laravel, database, and test commands.
+- Use host `npm` for frontend asset builds and Vite development.
+
+## Quick Start
+
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan migrate --seed
+npm run build
+```
+
+Open `http://localhost:8000/login` and sign in with:
+
+- Email: `admin@example.com`
+- Password: `password`
 
 ## Installation
 
@@ -73,12 +96,37 @@ Application URL:
 
 - `http://localhost:8000`
 
+For active frontend development, run Vite on your host machine in a separate terminal:
+
+```bash
+npm run dev
+```
+
 ## Login Credentials
 
+- Local demo accounts only. Do not use these seeded credentials outside local development/reviewer environments.
 - **Admin Email:** `admin@example.com`
 - **Staff Email:** `staff@example.com`
 - **Fallback Demo Email:** `test@example.com`
 - **Password:** `password`
+
+If login fails with `These credentials do not match our records.`, seed the active database again:
+
+```bash
+./bin/demo-users
+```
+
+Equivalent explicit Sail command:
+
+```bash
+./vendor/bin/sail artisan db:seed --class=DemoUserSeeder
+```
+
+If you need a clean reset:
+
+```bash
+./vendor/bin/sail artisan migrate:fresh --seed
+```
 
 ## Roles
 
@@ -94,6 +142,17 @@ Application URL:
 5. Open `Sales Orders` from the top navigation or dashboard.
 6. Create a sales order by selecting a product, entering quantity, and setting the order date.
 7. Edit and delete records to verify full CRUD behavior.
+
+## Daily Commands
+
+```bash
+./vendor/bin/sail up -d
+./vendor/bin/sail down
+./bin/demo-users
+./vendor/bin/sail artisan migrate --seed
+./vendor/bin/sail artisan test
+npm run dev
+```
 
 ## Features
 
@@ -173,7 +232,7 @@ Fields:
 
 ## Running Tests
 
-If you are using Laravel Sail (Docker), run the test suite inside the Sail container:
+Recommended: run the test suite through Laravel Sail so the environment matches the documented setup:
 
 ```bash
 ./vendor/bin/sail artisan test

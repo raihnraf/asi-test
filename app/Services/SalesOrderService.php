@@ -24,7 +24,8 @@ final class SalesOrderService
 
             return SalesOrder::query()->create(
                 $this->salesOrderPayload(
-                    productId: $product->id,
+                    product: $product,
+                    existingSalesOrder: null,
                     quantity: $quantity,
                     unitPrice: $unitPrice,
                     orderDate: $attributes['order_date'],
@@ -61,7 +62,8 @@ final class SalesOrderService
 
             $lockedSalesOrder->update(
                 $this->salesOrderPayload(
-                    productId: $selectedProduct->id,
+                    product: $selectedProduct,
+                    existingSalesOrder: $requestedProductId === $lockedSalesOrder->product_id ? $lockedSalesOrder : null,
                     quantity: $requestedQuantity,
                     unitPrice: $unitPrice,
                     orderDate: $attributes['order_date'],
@@ -105,12 +107,14 @@ final class SalesOrderService
     }
 
     /**
-     * @return array{product_id:int, quantity:int, unit_price:string, total_price:string, order_date:string}
+     * @return array{product_id:int, product_name_snapshot:string, product_sku_snapshot:string, quantity:int, unit_price:string, total_price:string, order_date:string}
      */
-    private function salesOrderPayload(int $productId, int $quantity, string $unitPrice, string $orderDate): array
+    private function salesOrderPayload(Product $product, ?SalesOrder $existingSalesOrder, int $quantity, string $unitPrice, string $orderDate): array
     {
         return [
-            'product_id' => $productId,
+            'product_id' => $product->id,
+            'product_name_snapshot' => $existingSalesOrder?->product_name_snapshot ?? $product->name,
+            'product_sku_snapshot' => $existingSalesOrder?->product_sku_snapshot ?? $product->sku,
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'total_price' => $this->calculateTotalPrice($unitPrice, $quantity),

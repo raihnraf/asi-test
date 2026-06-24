@@ -29,8 +29,8 @@ final class SalesOrderCsvExporter
             foreach ($this->rows($search) as $salesOrder) {
                 fputcsv($handle, [
                     substr((string) $salesOrder->order_date, 0, 10),
-                    $salesOrder->product_name,
-                    $salesOrder->product_sku,
+                    $salesOrder->product_name_snapshot,
+                    $salesOrder->product_sku_snapshot,
                     $salesOrder->quantity,
                     $salesOrder->unit_price,
                     $salesOrder->total_price,
@@ -45,18 +45,8 @@ final class SalesOrderCsvExporter
     {
         yield from SalesOrder::query()
             ->search($search)
-            ->join('products', 'products.id', '=', 'sales_orders.product_id')
-            ->latest('sales_orders.order_date')
-            ->latest('sales_orders.id')
-            ->select([
-                'sales_orders.id',
-                'sales_orders.order_date',
-                'sales_orders.quantity',
-                'sales_orders.unit_price',
-                'sales_orders.total_price',
-                'products.name as product_name',
-                'products.sku as product_sku',
-            ])
+            ->latest('order_date')
+            ->latest('id')
             ->cursor();
     }
 }

@@ -84,8 +84,8 @@
                                     @foreach ($salesOrders as $salesOrder)
                                         <tr>
                                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ $salesOrder->order_date->format('Y-m-d') }}</td>
-                                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ $salesOrder->product->name }}</td>
-                                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $salesOrder->product->sku }}</td>
+                                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ $salesOrder->product_name_snapshot }}</td>
+                                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $salesOrder->product_sku_snapshot }}</td>
                                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-600">{{ $salesOrder->quantity }}</td>
                                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-600">{{ \App\Support\Price::format($salesOrder->unit_price) }}</td>
                                             <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-600">{{ \App\Support\Price::format($salesOrder->total_price) }}</td>
@@ -119,7 +119,7 @@
                                                             </h2>
 
                                                             <p class="mt-2 text-sm text-gray-600">
-                                                                {{ __('Are you sure you want to delete the sales order for :name on :date? This action cannot be undone.', ['name' => $salesOrder->product->name, 'date' => $salesOrder->order_date->format('Y-m-d')]) }}
+                                                                {{ __('Are you sure you want to delete the sales order for :name on :date? This action cannot be undone.', ['name' => $salesOrder->product_name_snapshot, 'date' => $salesOrder->order_date->format('Y-m-d')]) }}
                                                             </p>
 
                                                             <div class="mt-6 flex justify-end gap-3">

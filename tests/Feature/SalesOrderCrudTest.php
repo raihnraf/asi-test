@@ -35,6 +35,8 @@ class SalesOrderCrudTest extends TestCase
 
         SalesOrder::factory()->create([
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 2,
             'unit_price' => 25000,
             'total_price' => 50000,
@@ -68,10 +70,14 @@ class SalesOrderCrudTest extends TestCase
 
         SalesOrder::factory()->create([
             'product_id' => $matchingProduct->id,
+            'product_name_snapshot' => $matchingProduct->name,
+            'product_sku_snapshot' => $matchingProduct->sku,
             'order_date' => '2026-06-24',
         ]);
         SalesOrder::factory()->create([
             'product_id' => $otherProduct->id,
+            'product_name_snapshot' => $otherProduct->name,
+            'product_sku_snapshot' => $otherProduct->sku,
             'order_date' => '2026-06-10',
         ]);
 
@@ -96,6 +102,8 @@ class SalesOrderCrudTest extends TestCase
 
         SalesOrder::factory()->create([
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 2,
             'unit_price' => 350.50,
             'total_price' => 701.00,
@@ -130,10 +138,14 @@ class SalesOrderCrudTest extends TestCase
 
         SalesOrder::factory()->create([
             'product_id' => $matchingProduct->id,
+            'product_name_snapshot' => $matchingProduct->name,
+            'product_sku_snapshot' => $matchingProduct->sku,
             'order_date' => '2026-06-24',
         ]);
         SalesOrder::factory()->create([
             'product_id' => $otherProduct->id,
+            'product_name_snapshot' => $otherProduct->name,
+            'product_sku_snapshot' => $otherProduct->sku,
             'order_date' => '2026-06-10',
         ]);
 
@@ -172,6 +184,8 @@ class SalesOrderCrudTest extends TestCase
 
         $this->assertDatabaseHas('sales_orders', [
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 3,
             'unit_price' => '125.75',
             'total_price' => '377.25',
@@ -225,6 +239,8 @@ class SalesOrderCrudTest extends TestCase
         $newProduct = Product::factory()->create(['price' => 150, 'stock' => 6]);
         $salesOrder = SalesOrder::factory()->create([
             'product_id' => $oldProduct->id,
+            'product_name_snapshot' => $oldProduct->name,
+            'product_sku_snapshot' => $oldProduct->sku,
             'quantity' => 2,
             'unit_price' => 80,
             'total_price' => 160,
@@ -246,6 +262,8 @@ class SalesOrderCrudTest extends TestCase
         $this->assertDatabaseHas('sales_orders', [
             'id' => $salesOrder->id,
             'product_id' => $newProduct->id,
+            'product_name_snapshot' => $newProduct->name,
+            'product_sku_snapshot' => $newProduct->sku,
             'quantity' => 4,
             'unit_price' => '150.00',
             'total_price' => '600.00',
@@ -265,6 +283,8 @@ class SalesOrderCrudTest extends TestCase
         ]);
         $salesOrder = SalesOrder::factory()->create([
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 2,
             'unit_price' => 125.75,
             'total_price' => 251.50,
@@ -288,6 +308,8 @@ class SalesOrderCrudTest extends TestCase
         $this->assertDatabaseHas('sales_orders', [
             'id' => $salesOrder->id,
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 4,
             'unit_price' => '125.75',
             'total_price' => '503.00',
@@ -303,6 +325,8 @@ class SalesOrderCrudTest extends TestCase
         $product = Product::factory()->create(['stock' => 10]);
         $salesOrder = SalesOrder::factory()->create([
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 3,
         ]);
 
@@ -327,6 +351,8 @@ class SalesOrderCrudTest extends TestCase
         ]);
         $salesOrder = SalesOrder::factory()->create([
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 2,
             'unit_price' => 125.75,
             'total_price' => 251.50,
@@ -357,6 +383,8 @@ class SalesOrderCrudTest extends TestCase
         $createResponse->assertRedirect(route('sales-orders.index', absolute: false));
         $this->assertDatabaseHas('sales_orders', [
             'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
             'quantity' => 3,
             'unit_price' => '125.75',
             'total_price' => '377.25',
@@ -370,5 +398,75 @@ class SalesOrderCrudTest extends TestCase
             'order_date' => '2026-06-27',
         ])->assertForbidden();
         $this->actingAs($staff)->delete("/sales-orders/{$salesOrder->id}")->assertForbidden();
+    }
+
+    public function test_sales_order_list_keeps_historical_product_name_and_sku_after_product_changes(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create([
+            'name' => 'Monitor 4K',
+            'sku' => 'MON-4000',
+        ]);
+
+        $salesOrder = SalesOrder::factory()->create([
+            'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
+            'order_date' => '2026-06-24',
+        ]);
+
+        $product->update([
+            'name' => 'Renamed Monitor',
+            'sku' => 'REN-9999',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/sales-orders');
+
+        $response->assertOk();
+        $response->assertSee('Monitor 4K');
+        $response->assertSee('MON-4000');
+        $response->assertDontSee('Renamed Monitor');
+        $response->assertDontSee('REN-9999');
+
+        $this->assertSame('Monitor 4K', $salesOrder->fresh()->product_name_snapshot);
+        $this->assertSame('MON-4000', $salesOrder->fresh()->product_sku_snapshot);
+    }
+
+    public function test_sales_order_csv_export_keeps_historical_product_name_and_sku_after_product_changes(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create([
+            'name' => 'Monitor 4K',
+            'sku' => 'MON-4000',
+        ]);
+
+        SalesOrder::factory()->create([
+            'product_id' => $product->id,
+            'product_name_snapshot' => $product->name,
+            'product_sku_snapshot' => $product->sku,
+            'quantity' => 2,
+            'unit_price' => 350.50,
+            'total_price' => 701.00,
+            'order_date' => '2026-06-24',
+        ]);
+
+        $product->update([
+            'name' => 'Renamed Monitor',
+            'sku' => 'REN-9999',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/sales-orders/export');
+
+        $response->assertOk();
+
+        $content = $response->streamedContent();
+
+        $this->assertStringContainsString('2026-06-24,"Monitor 4K",MON-4000,2,350.50,701.00', $content);
+        $this->assertStringNotContainsString('Renamed Monitor', $content);
+        $this->assertStringNotContainsString('REN-9999', $content);
     }
 }

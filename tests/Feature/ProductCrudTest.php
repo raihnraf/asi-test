@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Product;
+use App\Models\SalesOrder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -181,6 +182,23 @@ class ProductCrudTest extends TestCase
         $response->assertRedirect(route('products.index', absolute: false));
         $response->assertSessionHas('status', 'Product deleted successfully.');
         $this->assertDatabaseMissing('products', ['id' => $product->id]);
+    }
+
+    public function test_product_with_sales_orders_cannot_be_deleted(): void
+    {
+        $user = User::factory()->admin()->create();
+        $product = Product::factory()->create();
+        SalesOrder::factory()->create([
+            'product_id' => $product->id,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->delete("/products/{$product->id}");
+
+        $response->assertRedirect(route('products.index', absolute: false));
+        $response->assertSessionHas('error', 'Product cannot be deleted because it is already used in sales orders.');
+        $this->assertDatabaseHas('products', ['id' => $product->id]);
     }
 
     public function test_staff_can_view_products_but_cannot_manage_them(): void

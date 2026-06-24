@@ -68,6 +68,12 @@ class ProductController extends Controller
     {
         $this->authorize('delete', $product);
 
+        if ($product->salesOrders()->exists()) {
+            return redirect()
+                ->route('products.index')
+                ->with('error', 'Product cannot be deleted because it is already used in sales orders.');
+        }
+
         $product->delete();
 
         return redirect()

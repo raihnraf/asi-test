@@ -32,6 +32,12 @@
                         </div>
                     @endif
 
+                    @if (session('error'))
+                        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     @if ($products->isEmpty())
                         <div class="rounded-xl border border-dashed border-gray-300 px-6 py-14 text-center sm:px-10">
                             <h3 class="text-lg font-semibold text-gray-900">{{ __('No products yet') }}</h3>
