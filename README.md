@@ -1,70 +1,186 @@
 # Laravel Screening Test App
 
-A Laravel 11 web application demonstrating authentication, product management, and sales order transactions with proper RDBMS relationships.
+Laravel 11 web application for a screening test with:
+
+- login authentication
+- product master data CRUD
+- sales order transaction CRUD
+- relational database link from transactions to products
+- role-based access control for admin and staff users
+- dashboard analytics and CSV export for sales orders
 
 ## Prerequisites
 
-- Docker Desktop (with Docker Compose)
+- PHP 8.2+
+- Composer
+- Node.js and npm
+- Docker Desktop with Docker Compose
 - Git
 
 ## Installation
 
-### Step 1: Start Docker containers
+1. Install PHP dependencies.
+
+```bash
+composer install
+```
+
+2. Install frontend dependencies.
+
+```bash
+npm install
+```
+
+3. Create the environment file.
+
+```bash
+cp .env.example .env
+```
+
+4. Generate the application key.
+
+```bash
+php artisan key:generate
+```
+
+5. Start the Docker services.
 
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-This starts the MySQL database container.
-
-### Step 2: Run database migrations
+6. Run database migrations and seed the demo user.
 
 ```bash
-./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan migrate --seed
 ```
 
-This creates the required database tables (users, sessions, etc.).
-
-### Step 3: Seed demo user
+7. Build frontend assets.
 
 ```bash
-./vendor/bin/sail artisan db:seed --class=DemoUserSeeder
+npm run build
 ```
 
-This creates a demo user for testing the login flow.
-
-### Step 4: Start the development server
+8. Start the Laravel development server.
 
 ```bash
 ./vendor/bin/sail artisan serve
 ```
 
-The application will be available at: http://localhost:8000
+Application URL:
+
+- `http://localhost:8000`
 
 ## Login Credentials
 
-Use these credentials to test the authentication flow:
-
-- **Email:** `test@example.com`
+- **Admin Email:** `admin@example.com`
+- **Staff Email:** `staff@example.com`
+- **Fallback Demo Email:** `test@example.com`
 - **Password:** `password`
 
-## Testing the App
+## Roles
 
-1. Open http://localhost:8000/login in your browser
-2. Log in with the demo credentials above
-3. You will be redirected to the dashboard at http://localhost:8000/dashboard
-4. Click "Log Out" in the navigation to end your session
+- `admin` can manage products and sales orders end-to-end
+- `staff` can view products, view sales orders, create sales orders, and export sales order data
+
+## Usage Flow
+
+1. Open `http://localhost:8000/login`.
+2. Log in with the demo credentials.
+3. Open `Products` from the top navigation or dashboard.
+4. Create one or more products.
+5. Open `Sales Orders` from the top navigation or dashboard.
+6. Create a sales order by selecting a product, entering quantity, and setting the order date.
+7. Edit and delete records to verify full CRUD behavior.
+
+## Features
+
+### Authentication
+
+- login with email and password
+- protected dashboard
+- logout
+- seeded admin and staff demo accounts
+
+## Advanced Features Implemented (Candidate Edge)
+
+To demonstrate production-grade software development practices, this application goes beyond standard CRUD with:
+
+1. **Financial & Data Integrity (Price Snapshotting):** Product prices are snapshotted into the transactions table upon order creation, preventing historical financial data corruption when product master prices change.
+2. **Automated Inventory Control:** Sales orders automatically deduct or restore product stock. Strict validation prevents ordering beyond available stock.
+3. **Database Atomicity:** Multi-table operations such as order creation, update, deletion, and stock adjustment are wrapped inside `DB::transaction()`.
+4. **Role-Based Access Control (RBAC):** Built-in local authorization. `Admin` has full access, while `Staff` is limited to view and transactional creation flows.
+5. **Business Intelligence Dashboard:** The dashboard shows Total Revenue, Total Orders, and Total Products for quick reviewer inspection.
+6. **Data Portability:** Sales order history can be exported to CSV, including active search filters.
+
+### Product Master Data
+
+- product list
+- product search by name or SKU
+- create product
+- edit product
+- delete product
+
+Fields:
+
+- name
+- SKU
+- price
+- stock
+
+### Sales Order Transactions
+
+- sales order list
+- sales order search by product, SKU, or order date
+- create sales order
+- edit sales order
+- delete sales order
+- relation to product master data
+- automatic unit price and total price calculation
+- stock deduction and restoration on create, update, and delete
+- CSV export with filter support
+
+Fields:
+
+- product
+- quantity
+- unit price
+- total price
+- order date
+
+### Dashboard Analytics
+
+- total revenue widget
+- total products widget
+- total transactions widget
 
 ## Running Tests
+
+Run the full automated test suite:
+
+```bash
+php artisan test
+```
+
+Or with Sail:
 
 ```bash
 ./vendor/bin/sail artisan test
 ```
 
+Run focused feature suites:
+
+```bash
+php artisan test --filter=DashboardTest
+php artisan test --filter=ProductCrudTest
+php artisan test --filter=SalesOrderCrudTest
+```
+
 ## Tech Stack
 
-- **Framework:** Laravel 11 (PHP 8.4)
-- **Database:** MySQL 8.0
-- **Authentication:** Laravel Breeze (Blade stack)
-- **Frontend:** Blade templates + Tailwind CSS + Vite
+- **Framework:** Laravel 11
+- **Language:** PHP 8.2+
+- **Database:** MySQL 8 via Laravel Sail
+- **Authentication:** Laravel Breeze (Blade)
+- **Frontend:** Blade, Tailwind CSS, Vite
 - **Testing:** PHPUnit
